@@ -21,8 +21,16 @@ RUN apk --no-cache add \
       ca-certificates \
       xz \
       util-linux \
+      unzip \
     ;
 COPY --from=builder /assets /opt/resource
+
+# Install vault
+ADD https://releases.hashicorp.com/vault/1.1.3/vault_1.1.3_linux_amd64.zip /tmp/vault.zip
+RUN unzip /tmp/vault.zip && \
+    mv vault /usr/local/bin/vault && \
+    chmod a+x /usr/local/bin/vault
+
 RUN ln -s /opt/resource/ecr-login /usr/local/bin/docker-credential-ecr-login
 
 # stage: tests

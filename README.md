@@ -28,6 +28,18 @@ Note: docker registry must be [v2](https://docs.docker.com/registry/spec/api/).
 * `aws_session_token`: *Optional.* AWS session token (assumed role) to use for acquiring ECR
   credentials.
 
+* `vault`: *Optional* When running tests for the aws target, this section can be used to assume a role using a Vault instance that has been integrated with `AWS STS`.
+
+    * `address`: *Required* The address where vault can be reached.
+
+    * `token`: *Required* The vault token to be used for authentitaion to vault.
+
+    * `secondary_token_path`: *Optional* The value specified in the `token` field will be used to read this path here. This path should contain another vault token that will be used to assume the AWS role. If not specified, then `token` is used to read `secret_path` in order to assume the IAM role.
+
+    * `secret_path`: *Required* The `sts` role path where the write commands needs to be executed. This will result in fetching the AWS credentials.
+
+    * `ttl`: *Required* The time to leave for the write command.
+
 * `insecure_registries`: *Optional.* An array of CIDRs or `host:port` addresses
   to whitelist for insecure access (either `http` or unverified `https`).
   This option overrides any entries in `ca_certs` with the same address.

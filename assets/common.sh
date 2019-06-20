@@ -208,3 +208,30 @@ docker_pull() {
   printf "\n${RED}Failed to pull image %s.${NC}" "$1"
   return 1
 }
+
+vault_log_in() {
+  local result_output_file="$1"
+  local address="$2"
+  local token="$3"
+  local secondary_token_path="$4"
+  local secret_path="$5"
+  local ttl="$6"
+
+  export VAULT_ADDR="${address}"
+
+  printf "Logging in using the token...\n"
+  vault login -no-print=true "${token}"
+
+  if [ -n "${secondary_token_path}" ]; then
+    # If another token should be used for reading the credentials, other than the one used to read this path, then authenticate using it.
+
+    printf "Secondary token path provided. Fetching it...\n"
+    access_token=$(vault read -format json "${secondary_token_path}" | jq -r '.data.value // ""')
+
+    printf "Logging in using the secondary token...\n"
+    vault login -no-print=true "${access_token}"
+  fi
+
+  printf "Using STS to assume the ${secret_path} role...\n"
+  vault write -format=json "${secret_path}" -ttl="${ttl}" > $result_output_file
+}
