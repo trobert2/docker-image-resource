@@ -117,6 +117,7 @@ log_in() {
     echo "${password}" | docker login -u "${username}" --password-stdin ${registry}
   else
     mkdir -p ~/.docker
+    echo "Using ecr-login"
     echo '{"credsStore":"ecr-login"}' >> ~/.docker/config.json
   fi
 }
